@@ -1,0 +1,230 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Dashboard | CampusFind{% endblock %}
+
+{% block content %}
+
+<div class="card" style="background:linear-gradient(120deg,#6542c0,#9273df);color:white;">
+    <h1>Welcome, {{ user.username }}! 👋</h1>
+    <p style="color:white;">Every Lost Item Deserves to Be Found.</p>
+    <br>
+    <a href="{% url 'report_item' %}" class="btn" style="background:white;color:#6542c0;">
+        + Report an Item
+    </a>
+</div>
+
+
+
+{% if user.is_staff %}
+<h2>Administrator Overview 📊</h2>
+
+<div class="grid">
+    <div class="card">
+        <h3>Total Reports</h3>
+        <h1>{{ total_items }}</h1>
+    </div>
+
+    <div class="card">
+        <h3>Lost Items</h3>
+        <h1>{{ lost_items }}</h1>
+    </div>
+
+    <div class="card">
+        <h3>Found Items</h3>
+        <h1>{{ found_items }}</h1>
+    </div>
+
+    <div class="card">
+        <h3>Pending Reports</h3>
+        <h1>{{ pending_reports }}</h1>
+    </div>
+
+    <div class="card">
+        <h3>Pending Claims</h3>
+        <h1>{{ pending_claims }}</h1>
+    </div>
+
+    <div class="card">
+        <h3>Returned Items</h3>
+        <h1>{{ returned_items }}</h1>
+    </div>
+</div>
+<br>
+{% endif %}
+
+{% if user.is_staff %}
+<h2>Missing Items List 🚩</h2>
+<div class="card">
+    {% if missing_items %}
+        <ul style="padding-left: 1.2rem; margin: 0;">
+            {% for item in missing_items %}
+                <li style="margin-bottom: 0.5rem;">
+                    <strong>{{ item.title }}</strong>
+                    <span class="status">{{ item.status }}</span>
+                    <div>{{ item.location }} · {{ item.date_lost_found }}</div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No missing item reports yet.</p>
+    {% endif %}
+</div>
+<br>
+{% endif %}
+
+<h2>Find Lost and Found Items 🔍</h2>
+
+<div class="card">
+    <form method="GET" action="{% url 'dashboard' %}">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search item title or description..."
+            value="{{ search_query }}"
+            class="form-control"
+        >
+
+        <br>
+
+        <select name="category" class="form-control">
+            <option value="">All Categories</option>
+            {% for value, label in categories %}
+                <option value="{{ value }}"
+                    {% if selected_category == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br>
+
+        <select name="report_type" class="form-control">
+            <option value="">Lost and Found</option>
+            <option value="Lost"
+                {% if selected_report_type == 'Lost' %}selected{% endif %}>
+                Lost Items
+            </option>
+            <option value="Found"
+                {% if selected_report_type == 'Found' %}selected{% endif %}>
+                Found Items
+            </option>
+        </select>
+
+        <br>
+
+        <button type="submit" class="btn">Search Items</button>
+
+        <a href="{% url 'dashboard' %}" class="btn">
+            Clear Filters
+        </a>
+    </form>
+</div>
+
+<h2>Recently Approved Reports</h2>
+
+{% if items %}
+<div class="grid">
+    {% for item in items %}
+    <div class="card">
+
+        {% if item.photo %}
+            <img src="{{ item.photo.url }}" class="item-photo" alt="{{ item.title }}">
+        {% endif %}
+
+        <h2>{{ item.title }}</h2>
+        <span class="status">{{ item.report_type }}</span>
+
+        <p>{{ item.description|truncatewords:20 }}</p>
+        <p><strong>Category:</strong> {{ item.category }}</p>
+        <p><strong>Location:</strong> {{ item.location }}</p>
+        <p><strong>Date:</strong> {{ item.date_lost_found }}</p>
+        <p><strong>Reported by:</strong> {{ item.reported_by.username }}</p>
+
+        {% if item.report_type == 'Found' and item.reported_by != user %}
+            <a href="{% url 'claim_item' item.id %}" class="btn">
+                Claim This Item
+            </a>
+        {% endif %}
+
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <p>No approved reports yet. Check back later!</p>
+</div>
+{% endif %}
+
+<br>
+
+
+<h2>Notifications 🔔</h2>
+
+<div class="card">
+    <p><strong>Unread notifications: {{ unread_count }}</strong></p>
+
+    {% if my_notifications %}
+        {% for notification in my_notifications %}
+            <div style="padding:15px 0;border-bottom:1px solid #eee;">
+
+                {% if not notification.is_read %}
+                    <span style="color:#6542c0;font-weight:bold;">● NEW</span>
+                {% endif %}
+
+                <p>{{ notification.message }}</p>
+
+                <small>{{ notification.created_at|date:"M d, Y h:i A" }}</small>
+
+                {% if not notification.is_read %}
+                    <form method="POST" action="{% url 'mark_notification_read' notification.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn">Mark as Read</button>
+                    </form>
+                {% else %}
+                    <small>Already read ✓</small>
+                {% endif %}
+
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You don't have any notifications yet.</p>
+    {% endif %}
+</div>
+
+<br>
+<h2>My Reports</h2>
+
+<div class="card">
+    {% if my_reports %}
+        {% for item in my_reports %}
+            <div style="padding:15px 0;border-bottom:1px solid #eee;">
+                <strong>{{ item.title }}</strong>
+                <span class="status">{{ item.status }}</span>
+                <p>{{ item.report_type }} · {{ item.location }} · {{ item.date_lost_found }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You haven't submitted any reports yet.</p>
+    {% endif %}
+</div>
+
+<br>
+
+<h2>My Claim Requests</h2>
+
+<div class="card">
+    {% if my_claims %}
+        {% for claim in my_claims %}
+            <div style="padding:15px 0;border-bottom:1px solid #eee;">
+                <strong>{{ claim.item.title }}</strong>
+                <span class="status">{{ claim.status }}</span>
+                <p>{{ claim.message }}</p>
+                <small>Submitted: {{ claim.created_at }}</small>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You haven't submitted any claim requests yet.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

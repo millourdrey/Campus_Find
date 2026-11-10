@@ -1,0 +1,89 @@
+{% extends 'items/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2>Claim This Item</h2>
+
+        <div class="item-details">
+            <h3>{{ item.title }}</h3>
+            <p><strong>Category:</strong> {{ item.category }}</p>
+            <p><strong>Location Found:</strong> {{ item.location }}</p>
+            <p><strong>Description:</strong> {{ item.description }}</p>
+        </div>
+
+        <p>
+            Explain why you believe this item belongs to you.
+            Include identifying details that can help verify ownership.
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">Submit Claim</button>
+            <a href="{% url 'dashboard' %}">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+PYcat > items/templates/items/claim_item.html <<'PY'
+{% extends 'items/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2>Claim This Item</h2>
+
+        <div class="item-details">
+            <h3>{{ item.title }}</h3>
+            <p><strong>Category:</strong> {{ item.category }}</p>
+            <p><strong>Location Found:</strong> {{ item.location }}</p>
+            <p><strong>Description:</strong> {{ item.description }}</p>
+        </div>
+
+        <p>
+            Explain why you believe this item belongs to you.
+            Include identifying details that can help verify ownership.
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">Submit Claim</button>
+            <a href="{% url 'dashboard' %}">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+PYcat > items/templates/items/claim_item.html <<'PY'
+{% extends 'items/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2>Claim This Item</h2>
+
+        <div class="item-details">
+            <h3>{{ item.title }}</h3>
+            <p><strong>Category:</strong> {{ item.category }}</p>
+            <p><strong>Location Found:</strong> {{ item.location }}</p>
+            <p><strong>Description:</strong> {{ item.description }}</p>
+        </div>
+
+        <p>
+            Explain why you believe this item belongs to you.
+            Include identifying details that can help verify ownership.
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">Submit Claim</button>
+            <a href="{% url 'dashboard' %}">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

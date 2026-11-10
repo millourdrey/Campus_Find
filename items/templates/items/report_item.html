@@ -1,0 +1,18 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Report Item | CampusFind{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:750px;margin:auto;">
+    <h1>Report an Item</h1>
+    <p>Provide the details below to help someone find their belongings.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn">Submit Report</button>
+        <a href="/" class="btn btn-light">Cancel</a>
+    </form>
+</div>
+{% endblock %}
